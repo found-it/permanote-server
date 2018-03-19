@@ -6,6 +6,7 @@
  */
 
 #include "../include/server.h"
+#include "../include/base.h"
 
 void hello_s()
 {

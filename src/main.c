@@ -6,10 +6,8 @@
  */
 
 #include "../include/server.h"
+#include "../include/base.h"
 #include <stdio.h>
-
-#define SUCCESS 0
-#define ERROR  -1
 
 int main()
 {
