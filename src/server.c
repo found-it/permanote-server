@@ -5,7 +5,7 @@
  *  \brief  This is the main file for the server functions.
  */
 
-#include "./server.h"
+#include "../include/server.h"
 
 void hello_s()
 {

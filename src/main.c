@@ -5,7 +5,7 @@
  *  \brief  This is the main file running the server
  */
 
-#include "./server.h"
+#include "../include/server.h"
 #include <stdio.h>
 
 #define SUCCESS 0
