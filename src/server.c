@@ -13,6 +13,9 @@ void hello_s()
     printf("Hello from %s\n", __FILE__);
 }
 
+/**
+ *
+ */
 int server_setup()
 {
     int sockfd;
@@ -51,6 +54,9 @@ int server_setup()
 
 }
 
+/**
+ *
+ */
 int get_client(int sockfd)
 {
     struct sockaddr_in client_addr;
@@ -58,7 +64,9 @@ int get_client(int sockfd)
     return accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len);
 }
 
-
+/**
+ *
+ */
 int __get_msg__(int fd, char buf[], size_t size)
 {
     memset(buf, '\0', size);

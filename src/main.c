@@ -25,19 +25,29 @@ int main(int argc, char **argv)
         return ERROR;
     }
 
-    int clientfd = get_client(sockfd);
-    if (clientfd < 0)
+    int stat = SUCCESS;
+    while (stat != ERROR)
     {
-        printf("Server Setup Failed: %d\n", clientfd);
-        return ERROR;
+        char buf[MAX_LEN];
+
+        int clientfd = get_client(sockfd);
+        if (clientfd < 0)
+        {
+            printf("Server Setup Failed: %d\n", clientfd);
+            return ERROR;
+        }
+
+#if 1
+        if (get_msg(clientfd, buf) < 0)
+        {
+            printf("Failed to get message: %d\n", errno);
+            stat = ERROR;
+        }
+#else
+        get_msg(clientfd, buf);
+#endif
+        printf("R: %s\n", buf);
     }
-
-    char buf[MAX_LEN];
-    get_msg(clientfd, buf);
-
-
-    printf("R: %s\n", buf);
-
     close(sockfd);
 
     return SUCCESS;
