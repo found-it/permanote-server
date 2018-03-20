@@ -12,19 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int get_client(int sockfd)
-{
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-    return accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len);
-/*
-    if ((client_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len)) < 0)
-    {
-        printf("Accept failed: %d\n", errno);
-        return ERROR;
-    }
-*/
-}
+
 
 int main(int argc, char **argv)
 {
@@ -44,16 +32,9 @@ int main(int argc, char **argv)
         return ERROR;
     }
 
-
     char buf[MAX_LEN];
-    memset(buf, '\0', MAX_LEN);
-    int bytes;
-    if ((bytes = recv(clientfd, buf, MAX_LEN-1, 0)) < 0)
-    {
-        printf("Receive failed: %d\n", errno);
-        close(sockfd);
-        return ERROR;
-    }
+    get_msg(clientfd, buf);
+
 
     printf("R: %s\n", buf);
 

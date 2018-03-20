@@ -50,3 +50,17 @@ int server_setup()
     return sockfd;
 
 }
+
+int get_client(int sockfd)
+{
+    struct sockaddr_in client_addr;
+    socklen_t client_addr_len = sizeof(client_addr);
+    return accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len);
+}
+
+
+int __get_msg__(int fd, char buf[], size_t size)
+{
+    memset(buf, '\0', size);
+    return recv(fd, buf, size-1, 0);
+}

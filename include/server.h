@@ -16,11 +16,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define TCP_PORT 4444
+#define TCP_PORT  4444
 #define IADDR    "127.0.0.1"
-#define NUM_CONN 20
+#define NUM_CONN  20
 
 void hello_s();
 int server_setup();
+int get_client(int sockfd);
+#define get_msg(fd, buf) __get_msg__(fd, buf, sizeof(buf)/sizeof(buf[0]))
 
 #endif
