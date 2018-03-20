@@ -12,5 +12,6 @@
 #define SUCCESS 0
 #define ERROR  -1
 
+#define MAX_LEN  1024
 
 #endif
