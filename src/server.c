@@ -67,7 +67,7 @@ int get_client(int sockfd)
 /**
  *
  */
-int __get_msg__(int fd, char buf[], size_t size)
+int get_msg(int fd, char buf[], size_t size)
 {
     memset(buf, '\0', size);
     return recv(fd, buf, size-1, 0);

@@ -23,7 +23,6 @@
 void hello_s();
 int server_setup();
 int get_client(int sockfd);
-int __get_msg__(int fd, char buf[], size_t size);
-#define get_msg(fd, buf) __get_msg__(fd, buf, sizeof(buf)/sizeof(buf[0]))
+int get_msg(int fd, char buf[], size_t size);
 
 #endif
