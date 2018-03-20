@@ -7,6 +7,7 @@
 
 #include "../include/server.h"
 #include "../include/base.h"
+#include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -17,10 +18,43 @@ int _shutdown = 0;
 
 static void int_handler(int sig)
 {
+    printf("\nIn %s\n", __func__);
     _shutdown = 1;
-    printf("IN %s\n", __func__);
 }
 
+
+void *handle_client(void *client)
+{
+    printf("in thread!\n");
+    int *clientfd = (int *)client;
+    char prompt[] = "you@thecoolest-tcpserver$ ";
+    int prompt_len = strlen(prompt);
+
+    while (_shutdown != 1)
+    {
+        char buf[MAX_LEN];
+
+        if (send(*clientfd, prompt, prompt_len, 0) != prompt_len)
+        {
+            printf("Server Prompt Failed: %d\n", *clientfd);
+            break;
+        }
+        
+        if (get_msg(*clientfd, buf, MAX_LEN) < 0)
+        {
+            printf("Failed to get message: %d\n", errno);
+            break;
+        }
+        printf("R: %s\n", buf);
+    }
+    return NULL;
+}
+
+struct client
+{
+    pthread_t client_thread;
+    int clientfd;
+};
 
 int main(int argc, char **argv)
 {
@@ -31,9 +65,7 @@ int main(int argc, char **argv)
 
     hello_s();
     
-    char prompt[] = "> ";
-    int prompt_len = strlen(prompt);
-    int bytes_sent;
+    pthread_t client_thread;
 
     int sockfd = server_setup();
     if (sockfd < 0)
@@ -44,29 +76,23 @@ int main(int argc, char **argv)
 
     while (_shutdown != 1)
     {
-        printf("_shutdown: %d\n", _shutdown);
-        char buf[MAX_LEN];
-
         int clientfd = get_client(sockfd);
         if (clientfd < 0)
         {
             printf("Server Setup Failed: %d\n", clientfd);
-            break;
+            return ERROR;
         }
 
-        if (send(clientfd, prompt, prompt_len, 0) != prompt_len)
+        if (pthread_create(&client_thread, NULL, handle_client, &clientfd) != 0)
         {
-            printf("Server Prompt Failed: %d\n", clientfd);
-            break;
+            printf("Client Thread Creation Failed: %d\n", clientfd);
+            return ERROR;
         }
-        
-        if (get_msg(clientfd, buf, MAX_LEN) < 0)
-        {
-            printf("Failed to get message: %d\n", errno);
-            break;
-        }
-        printf("R: %s\n", buf);
     }
+
+    if (pthread_join(client_thread, NULL) != 0)
+        fprintf(stderr, "Error joining thread\n");
+        
     printf("Shutting down..\n");
     close(sockfd);
 

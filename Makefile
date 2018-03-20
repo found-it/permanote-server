@@ -7,13 +7,14 @@
 
 CC     = gcc
 CFLAGS = -Wall
+LIB    = -lpthread
 
 OBJ    = server.o main.o
 
 TARGET = server
 
 server: $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(LIB)
 
 server.o: src/server.c include/server.h
 	$(CC) $(CFLAGS) -c src/server.c
