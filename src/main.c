@@ -16,6 +16,20 @@
 
 int _shutdown = 0;
 
+
+/**
+ *
+ */
+struct client
+{
+    pthread_t client_thread;
+    int clientfd;
+};
+
+
+/**
+ *
+ */
 static void int_handler(int sig)
 {
     printf("\nIn %s\n", __func__);
@@ -23,6 +37,9 @@ static void int_handler(int sig)
 }
 
 
+/**
+ *
+ */
 void *handle_client(void *client)
 {
     printf("in thread!\n");
@@ -50,12 +67,10 @@ void *handle_client(void *client)
     return NULL;
 }
 
-struct client
-{
-    pthread_t client_thread;
-    int clientfd;
-};
 
+/**
+ *
+ */
 int main(int argc, char **argv)
 {
     struct sigaction sigact;
@@ -74,9 +89,9 @@ int main(int argc, char **argv)
         return ERROR;
     }
 
-    while (_shutdown != 1)
+    int clientfd;
+    while (_shutdown != 1 && clientfd = get_client(sockfd))
     {
-        int clientfd = get_client(sockfd);
         if (clientfd < 0)
         {
             printf("Server Setup Failed: %d\n", clientfd);
@@ -90,8 +105,6 @@ int main(int argc, char **argv)
         }
     }
 
-    if (pthread_join(client_thread, NULL) != 0)
-        fprintf(stderr, "Error joining thread\n");
         
     printf("Shutting down..\n");
     close(sockfd);
