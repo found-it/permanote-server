@@ -9,9 +9,9 @@
 #define BASE_H
 
 /* Global defines */
-#define SUCCESS 0
-#define ERROR  -1
-#define NOFILE -2
+#define SUCCESS  0
+#define ERROR   -1
+#define NOFILE  -2
 
 /* Maximum length of any message */
 #define MAX_LEN  1024

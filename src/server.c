@@ -17,37 +17,43 @@
  */
 int server_setup()
 {
-    int sockfd;
     int yes = 1;
+    int sockfd;
     struct sockaddr_in addr;
 
+    /* create socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         fprintf(stderr, "Socket creation failed: %d\n", errno);
         return ERROR;
     }
 
+    /* set socket options */
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
     {
         fprintf(stderr, "Socket option failed: %d\n", errno);
         return ERROR;
     }
 
-    addr.sin_family      = AF_INET;
-    addr.sin_port        = htons(TCP_PORT);
-    addr.sin_addr.s_addr = INADDR_ANY;
+    /* fill the address struct */
+    addr.sin_family      = AF_INET;         /* IPv4 */
+    addr.sin_port        = htons(TCP_PORT); /* TCP */
+    addr.sin_addr.s_addr = INADDR_ANY;      /* 0.0.0.0 */
 
+    /* bind socket to 0.0.0 */
     if (bind(sockfd, (const struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         fprintf(stderr, "Socket binding failed: %d\n", errno);
         return ERROR;
     }
 
+    /* set backlog */
     if (listen(sockfd, NUM_CONN) < 0)
     {
         fprintf(stderr, "Listen failed: %d\n", errno);
         return ERROR;
     }
+
     return sockfd;
 } /* function server_setup */
 

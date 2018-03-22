@@ -3,14 +3,16 @@
 #   \author James Petersen
 #
 #   \brief  This is the Makefile that builds the TCP Server
+#
+#   Usage:
+#       make
+#       make clean
 ##
 
 CC     = gcc
 CFLAGS = -Wall
 LIB    = -lpthread
-
 OBJ    = server.o commands.o main.o
-
 TARGET = server
 
 server: $(OBJ)

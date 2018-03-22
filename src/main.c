@@ -29,7 +29,6 @@ static void *handle_client(void *client);
  */
 static void int_handler(int sig)
 {
-    printf("in %s\n", __func__);
     _shutdown = 1;
 } /* function int_handler */
 
@@ -84,12 +83,11 @@ int main(int argc, char **argv)
         }
     }
 
-    printf("Shutting down..\n");
+    printf("\nShutting down..\n");
     close(sockfd);
 
     return SUCCESS;
 } /* function main */
-
 
 
 /**
@@ -112,7 +110,7 @@ static void *handle_client(void *client)
     const char user_prompt[] = "\n"
                                "Hello!\n"
                                "\n"
-                               "You have been connected to James' TCP Server\n"
+                               "You have been connected to Perma-note Server.\n"
                                "\n"
                                "Please enter your username below.\n"
                                "If this is your first time here, feel free\n"
@@ -142,7 +140,7 @@ static void *handle_client(void *client)
 
     /* construct the prompt */
     strncpy(prompt, username, strlen(username));
-    strncat(prompt, "@open-note$ ", MAX_LEN);
+    strncat(prompt, "@perma-note$ ", MAX_LEN);
     prompt_len = strnlen(prompt, MAX_LEN);
 
     /* loop to communicate with client */

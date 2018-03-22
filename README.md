@@ -1,18 +1,15 @@
-# TCP Server Program
+# Perma-note TCP Server
 ### Written by: James Petersen
 
-This program is a simple command line TCP Server implemented in C.
+Have you ever accidentally deleted something you shouldn't have? Ever fallen asleep on your backspace key and deleted all of your notes? Yes? Ever wanted to store your notes permanently? Well you're in luck! With this simplistic server, you can store notes based on your custom username without fear of them being deleted. You can go back and read what you have previously written whenever you want! The notes are permanent which means no accidentally (or intentionally) deleting them. Give it a try and prepare to never use OneNote again.
 
-### Port:    4444
-### Address: 0.0.0.0 (ANY)
-
-## Current Commands
+## Current Supported Commands
 
 ```
 help    - Displays a help menu.
 hello   - Responds with a greeting.
 write   - Reads text from the user and stores in file on server.
-          Use ...<return> to end the user input.
+          Use ;;;<return> to end the user input.
 read    - Displays the notes file for the logged in user.
 ```
 
@@ -25,6 +22,8 @@ make
 ```
 
 Connect to the server by opening up another terminal and using netcat
+### Port:    4444
+### Address: 0.0.0.0 (ANY)
 ```
 nc 0.0.0.0 4444
 ```

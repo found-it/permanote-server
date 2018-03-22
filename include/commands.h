@@ -23,7 +23,7 @@
  *          sent by the client and returns a value from
  *          the command enum.
  */
-int parse_command(char *input);
+int parse_command(const char *input);
 
 
 /**
@@ -32,6 +32,6 @@ int parse_command(char *input);
  *  \brief  This function executes the parsed command
  *          using the command enum to ID each case.
  */
-int exec_command(int fd, int cmd, const char *username);
+int exec_command(int fd, const int cmd, const char *username);
 
 #endif
