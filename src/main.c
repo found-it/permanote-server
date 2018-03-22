@@ -20,16 +20,6 @@ int _shutdown = 0;
 /**
  *
  */
-struct client
-{
-    pthread_t client_thread;
-    int clientfd;
-};
-
-
-/**
- *
- */
 static void int_handler(int sig)
 {
     printf("\nIn %s\n", __func__);
@@ -42,11 +32,36 @@ static void int_handler(int sig)
  */
 void *handle_client(void *client)
 {
-    printf("in thread!\n");
     int *clientfd = (int *)client;
-    char prompt[] = "you@thecoolest-tcpserver$ ";
-    int prompt_len = strlen(prompt);
+    char prompt[MAX_LEN];
+    int prompt_len;
 
+    char user_prompt[] = "Username: ";
+    int user_p_len = strlen(user_prompt);
+    char username[MAX_LEN];
+    
+
+    if (send(*clientfd, user_prompt, user_p_len, 0) != user_p_len)
+    {
+        printf("Server Prompt Failed: %d\n", *clientfd);
+        free(clientfd);
+        pthread_exit(NULL);
+    }
+
+    if (get_msg(*clientfd, username, MAX_LEN) < 0)
+    {
+        printf("Failed to get message: %d\n", errno);
+        free(clientfd);
+        pthread_exit(NULL);
+    }
+
+    /* strip off the \n */
+    username[strlen(username)-1] = '\0';
+    strncpy(prompt, username, strlen(username));
+    strncat(prompt, "@thecoolest-tcpserver$ ", MAX_LEN);
+    prompt_len = strnlen(prompt, MAX_LEN);
+    
+    int rc = 0;
     while (_shutdown != 1)
     {
         char buf[MAX_LEN];
@@ -57,14 +72,19 @@ void *handle_client(void *client)
             break;
         }
         
-        if (get_msg(*clientfd, buf, MAX_LEN) < 0)
+        rc = get_msg(*clientfd, buf, MAX_LEN);
+        if (rc < 0)
         {
-            printf("Failed to get message: %d\n", errno);
+            printf("Failed to get message: %d\n", rc);
             break;
         }
-        printf("R: %s\n", buf);
+        else if (rc == 0)
+            break;
+
+        printf("%s: %s\n", username, buf);
     }
-    return NULL;
+    free(clientfd);
+    pthread_exit(NULL);
 }
 
 
@@ -76,7 +96,6 @@ int main(int argc, char **argv)
     struct sigaction sigact;
     sigact.sa_handler = int_handler;
     sigaction(SIGINT, &sigact, NULL);
-
 
     hello_s();
     
@@ -90,15 +109,23 @@ int main(int argc, char **argv)
     }
 
     int clientfd;
-    while (_shutdown != 1 && clientfd = get_client(sockfd))
+    int *newfd;
+    //while (_shutdown != 1 && (clientfd = get_client(sockfd)))
+    while ((clientfd = get_client(sockfd)))
     {
+        if (_shutdown == 1)
+            break;
+
         if (clientfd < 0)
         {
             printf("Server Setup Failed: %d\n", clientfd);
             return ERROR;
         }
 
-        if (pthread_create(&client_thread, NULL, handle_client, &clientfd) != 0)
+        newfd = malloc(sizeof(int));
+        *newfd = clientfd;
+
+        if (pthread_create(&client_thread, NULL, handle_client, newfd) != 0)
         {
             printf("Client Thread Creation Failed: %d\n", clientfd);
             return ERROR;
