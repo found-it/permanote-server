@@ -27,3 +27,4 @@ main.o: src/main.c
 
 clean:
 	rm -f $(OBJ) $(TARGET)
+	rm -f files/*

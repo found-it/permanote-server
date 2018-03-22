@@ -80,6 +80,8 @@ static int write_file(int fd, const char *username)
     size_t len = strlen(username) + 4;
     char filename[len];
     char filepath[len + 8];
+    char response[MAX_LEN];
+    int  response_len;
     snprintf(filename, len, "%s.md", username);
     snprintf(filepath, len + 8, "./files/%s", filename);
 
@@ -90,15 +92,17 @@ static int write_file(int fd, const char *username)
         return ERROR;
     }
 
-    char response[MAX_LEN];
     snprintf(response, MAX_LEN, "Opening file: %s\n", filename);
-    int response_len = strlen(response);
+    response_len = strlen(response);
 
     if (send(fd, response, response_len, 0) != response_len)
     {
         fprintf(stderr, "Response Failed: %d\n", fd);
         return ERROR;
     }
+
+
+
     return SUCCESS;
 }
 
