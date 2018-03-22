@@ -12,10 +12,18 @@
 /**
  *  \enum of commands used by the server
  */
-enum commands {Hello = 1, Help = 2};
+enum commands 
+{
+    Hello = 1, 
+    Help  = 2
+};
+
 
 /**
+ *  server_setup()
  *
+ *  \brief  This function sets up the server socket and returns
+ *          the file descriptor that identifies it.
  */
 int server_setup()
 {
@@ -50,32 +58,43 @@ int server_setup()
         fprintf(stderr, "Listen failed: %d\n", errno);
         return ERROR;
     }
-
     return sockfd;
+} /* function server_setup */
 
-}
 
 /**
+ *  get_client()
  *
+ *  \brief  This function gets a new connected client.
+ *  \return Client fd on success, -1 on error.
  */
 int get_client(int sockfd)
 {
     struct sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
     return accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len);
-}
+} /* function get_client */
+
 
 /**
+ *  get_msg()
  *
+ *  \brief  This function clears the buffer that it will
+ *          fill then returns the number of bytes received.
  */
 int get_msg(int fd, char buf[], size_t size)
 {
     memset(buf, '\0', size);
     return recv(fd, buf, size-1, 0);
-}
+} /* function get_msg */
+
 
 /**
+ *  parse_command()
  *
+ *  \brief  This function compares the string that is
+ *          sent by the client and returns a value from
+ *          the command enum.
  */
 int parse_command(char *input)
 {
@@ -86,30 +105,39 @@ int parse_command(char *input)
         return Help;
 
     return ERROR;
-}
+} /* function parse_command */
+
 
 /**
+ *  exec_command()
  *
+ *  \brief  This function executes the parsed command
+ *          using the command enum to ID each case.
  */
 int exec_command(int fd, int cmd)
 {
+    int status = SUCCESS;
     switch (cmd)
     {
         case Hello:
-            hello(fd);
+            status = hello(fd);
             break;
         case Help:
-            help(fd);
+            status = help(fd);
             break;
         default:
-            invalid(fd);
+            status = invalid(fd);
             break;
     }
-    return SUCCESS;
-}
+    return status;
+} /* function exec_command */
+
 
 /**
+ *  hello()
  *
+ *  \brief  This function sends the hello string to 
+ *          the client.
  */
 int hello(int fd)
 {
@@ -123,10 +151,14 @@ int hello(int fd)
         return ERROR;
     }
     return SUCCESS;
-}
+} /* function hello */
+
 
 /**
+ *  help()
  *
+ *  \brief  This function sends the help menu to 
+ *          the client.
  */
 int help(int fd)
 {
@@ -145,8 +177,15 @@ int help(int fd)
         return ERROR;
     }
     return SUCCESS;
-}
+} /* function help */
 
+
+/**
+ *  invalid()
+ *
+ *  \brief  This function responds to the client 
+ *          if the command is invalid.
+ */
 int invalid(int fd)
 {
     char invalid[] =  "\n"
@@ -161,4 +200,4 @@ int invalid(int fd)
     }
     return SUCCESS;
 
-}
+} /* function invalid */

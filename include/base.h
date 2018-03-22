@@ -8,10 +8,11 @@
 #ifndef BASE_H
 #define BASE_H
 
-
+/* Global defines */
 #define SUCCESS 0
 #define ERROR  -1
 
+/* Maximum length of any message */
 #define MAX_LEN  1024
 
 #endif

@@ -17,21 +17,25 @@
 /* shutdown variable for threads */
 static int _shutdown = 0;
 
+/* static function definitions */
 static void *handle_client(void *client);
 
+
 /**
+ *  int_handler()
  *
+ *  \brief  This function handles the ctrl-C interrupt.
  */
 static void int_handler(int sig)
 {
     _shutdown = 1;
-}
-
-
+} /* function int_handler */
 
 
 /**
+ *  main()
  *
+ *  \brief  This is the main server loop function.
  */
 int main(int argc, char **argv)
 {
@@ -78,12 +82,11 @@ int main(int argc, char **argv)
         }
     }
 
-
     printf("Shutting down..\n");
     close(sockfd);
 
     return SUCCESS;
-}
+} /* function main */
 
 
 
@@ -137,7 +140,7 @@ static void *handle_client(void *client)
         /* send the prompt to the client */
         if (send(*clientfd, prompt, prompt_len, 0) != prompt_len)
         {
-            fprintf(stderr, "Server Prompt Failed: %d\n", *clientfd);
+            fprintf(stderr, "[%s] Server Prompt Failed: %d\n", username, *clientfd);
             break;
         }
 
@@ -145,18 +148,24 @@ static void *handle_client(void *client)
         rc = get_msg(*clientfd, buf, MAX_LEN);
         if (rc < 0)
         {
-            fprintf(stderr, "Failed to get message: %d\n", rc);
+            fprintf(stderr, "[%s] Failed to get message: %d\n", username, rc);
             break;
         }
-        else if (rc == 0)
+        else if (rc == 0) /* client quit */
+        {
             break;
-        else
+        }
+        else /* parse the command */
         {
             buf[strlen(buf)-1] = '\0';
             cmd = parse_command(buf);
         }
 
-        exec_command(*clientfd, cmd);
+        if (exec_command(*clientfd, cmd))
+        {
+            fprintf(stderr, "[%s] Error executing command\n", username);
+            break;
+        }
     }
     free(clientfd);
     pthread_exit(NULL);
