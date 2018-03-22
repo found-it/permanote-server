@@ -14,23 +14,75 @@
 #include <unistd.h>
 #include <signal.h>
 
-int _shutdown = 0;
+static int _shutdown = 0;
 
+static void *handle_client(void *client);
 
 /**
  *
  */
 static void int_handler(int sig)
 {
-    printf("\nIn %s\n", __func__);
     _shutdown = 1;
 }
+
+
 
 
 /**
  *
  */
-void *handle_client(void *client)
+int main(int argc, char **argv)
+{
+    struct sigaction sigact;
+    sigact.sa_handler = int_handler;
+    sigaction(SIGINT, &sigact, NULL);
+
+    pthread_t client_thread;
+
+    int sockfd = server_setup();
+    if (sockfd < 0)
+    {
+        printf("Server Setup Failed: %d\n", sockfd);
+        return ERROR;
+    }
+
+    int clientfd;
+    int *newfd;
+    while (clientfd = get_client(sockfd))
+    {
+        if (_shutdown == 1)
+            break;
+
+        if (clientfd < 0)
+        {
+            printf("Server Setup Failed: %d\n", clientfd);
+            return ERROR;
+        }
+
+        newfd = malloc(sizeof(int));
+        *newfd = clientfd;
+
+        if (pthread_create(&client_thread, NULL, handle_client, newfd) != 0)
+        {
+            printf("Client Thread Creation Failed: %d\n", clientfd);
+            return ERROR;
+        }
+    }
+
+        
+    printf("Shutting down..\n");
+    close(sockfd);
+
+    return SUCCESS;
+}
+
+
+
+/**
+ *
+ */
+static void *handle_client(void *client)
 {
     int *clientfd = (int *)client;
     char prompt[MAX_LEN];
@@ -62,6 +114,7 @@ void *handle_client(void *client)
     prompt_len = strnlen(prompt, MAX_LEN);
     
     int rc = 0;
+    int cmd;
     while (_shutdown != 1)
     {
         char buf[MAX_LEN];
@@ -80,61 +133,14 @@ void *handle_client(void *client)
         }
         else if (rc == 0)
             break;
+        else
+        {
+            buf[strlen(buf)-1] = '\0';
+            cmd = parse_command(buf);
+        }
 
-        printf("%s: %s\n", username, buf);
+        exec_command(*clientfd, cmd);
     }
     free(clientfd);
     pthread_exit(NULL);
-}
-
-
-/**
- *
- */
-int main(int argc, char **argv)
-{
-    struct sigaction sigact;
-    sigact.sa_handler = int_handler;
-    sigaction(SIGINT, &sigact, NULL);
-
-    hello_s();
-    
-    pthread_t client_thread;
-
-    int sockfd = server_setup();
-    if (sockfd < 0)
-    {
-        printf("Server Setup Failed: %d\n", sockfd);
-        return ERROR;
-    }
-
-    int clientfd;
-    int *newfd;
-    //while (_shutdown != 1 && (clientfd = get_client(sockfd)))
-    while ((clientfd = get_client(sockfd)))
-    {
-        if (_shutdown == 1)
-            break;
-
-        if (clientfd < 0)
-        {
-            printf("Server Setup Failed: %d\n", clientfd);
-            return ERROR;
-        }
-
-        newfd = malloc(sizeof(int));
-        *newfd = clientfd;
-
-        if (pthread_create(&client_thread, NULL, handle_client, newfd) != 0)
-        {
-            printf("Client Thread Creation Failed: %d\n", clientfd);
-            return ERROR;
-        }
-    }
-
-        
-    printf("Shutting down..\n");
-    close(sockfd);
-
-    return SUCCESS;
 }

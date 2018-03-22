@@ -8,10 +8,6 @@
 #include "../include/server.h"
 #include "../include/base.h"
 
-void hello_s()
-{
-    printf("Hello from %s\n", __FILE__);
-}
 
 /**
  *
@@ -71,4 +67,74 @@ int get_msg(int fd, char buf[], size_t size)
 {
     memset(buf, '\0', size);
     return recv(fd, buf, size-1, 0);
+}
+
+/**
+ *
+ */
+int parse_command(char *input)
+{
+    if (strcmp(input, "hello") == 0)
+        return Hello;
+    
+    if (strcmp(input, "help") == 0)
+        return Help;
+    
+    return ERROR;
+}
+
+/**
+ *
+ */
+int exec_command(int fd, int cmd)
+{
+    switch (cmd)
+    {
+    case Hello:
+        hello(fd);
+        break;
+    case Help:
+        help(fd);
+        break;
+    default:
+        printf("command failure\n");
+        break;
+    }
+    return SUCCESS;
+}
+
+/**
+ *
+ */
+int hello(int fd)
+{
+    char hello[] = "Oh hai Mark\n";
+    int hello_len = strlen(hello);
+    if (send(fd, hello, hello_len, 0) != hello_len)
+    {
+        printf("Hello Command Failed: %d\n", fd);
+        return ERROR;
+    }
+    return SUCCESS;
+}
+
+/**
+ *
+ */
+int help(int fd)
+{
+    char help[] =   "--------------------------------\n"
+                    "          HELP MENU\n"
+                    "--------------------------------\n"
+                    "\n"
+                    "help   - prints help menu\n"
+                    "hello  - prints a hello message\n"
+                    "\n";
+    int help_len = strlen(help);
+    if (send(fd, help, help_len, 0) != help_len)
+    {
+        printf("Help Command Failed: %d\n", fd);
+        return ERROR;
+    }
+    return SUCCESS;
 }
