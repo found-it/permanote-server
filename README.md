@@ -34,11 +34,15 @@ nc 0.0.0.0 4444
 
 or from another machine
 ```
-nc you.machine.ip.addr 4444
+nc your.machine.ip.addr 4444
 ```
 
 The server will prompt you for a username at first, go ahead and pick one and then begin issuing commands. You can quit the client by ctrl-C.
 
+## Notes
+
 **Compiled on:    Ubuntu 16.04 LTS**
 
 **Kernel version: 4.13.0-32-generic**
+
+_Comment style supports Doxygen, however I have not created a Doxyfile for the project. I would be happy to create one upon request._
