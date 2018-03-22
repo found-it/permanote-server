@@ -5,6 +5,7 @@
  *  \brief  This is the main file running the server
  */
 
+#include "../include/commands.h"
 #include "../include/server.h"
 #include "../include/base.h"
 #include <pthread.h>
@@ -107,8 +108,17 @@ static void *handle_client(void *client)
     char username[MAX_LEN];         /* username */
 
     /* prompt for username */
-    char user_prompt[] = "Username: ";
-    int  user_p_len = strlen(user_prompt);
+    const char user_prompt[] = "\n"
+                               "Hello!\n"
+                               "\n"
+                               "You have been connected to James' TCP Server\n"
+                               "\n"
+                               "Please enter your username below.\n"
+                               "If this is your first time here, feel free\n"
+                               "to enter a username of your choice.\n"
+                               "\n"
+                               "Username: ";
+    const int  user_p_len = strlen(user_prompt);
 
     /* prompt for username */
     if (send(*clientfd, user_prompt, user_p_len, 0) != user_p_len)
@@ -131,7 +141,7 @@ static void *handle_client(void *client)
 
     /* construct the prompt */
     strncpy(prompt, username, strlen(username));
-    strncat(prompt, "@thecoolest-tcpserver$ ", MAX_LEN);
+    strncat(prompt, "@open-note$ ", MAX_LEN);
     prompt_len = strnlen(prompt, MAX_LEN);
 
     /* loop to communicate with client */
@@ -161,7 +171,7 @@ static void *handle_client(void *client)
             cmd = parse_command(buf);
         }
 
-        if (exec_command(*clientfd, cmd))
+        if (exec_command(*clientfd, cmd, username))
         {
             fprintf(stderr, "[%s] Error executing command\n", username);
             break;

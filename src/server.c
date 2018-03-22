@@ -15,7 +15,8 @@
 enum commands 
 {
     Hello = 1, 
-    Help  = 2
+    Help  = 2,
+    Write = 3
 };
 
 
@@ -87,117 +88,3 @@ int get_msg(int fd, char buf[], size_t size)
     memset(buf, '\0', size);
     return recv(fd, buf, size-1, 0);
 } /* function get_msg */
-
-
-/**
- *  parse_command()
- *
- *  \brief  This function compares the string that is
- *          sent by the client and returns a value from
- *          the command enum.
- */
-int parse_command(char *input)
-{
-    if (strcmp(input, "hello") == 0)
-        return Hello;
-
-    if (strcmp(input, "help") == 0)
-        return Help;
-
-    return ERROR;
-} /* function parse_command */
-
-
-/**
- *  exec_command()
- *
- *  \brief  This function executes the parsed command
- *          using the command enum to ID each case.
- */
-int exec_command(int fd, int cmd)
-{
-    int status = SUCCESS;
-    switch (cmd)
-    {
-        case Hello:
-            status = hello(fd);
-            break;
-        case Help:
-            status = help(fd);
-            break;
-        default:
-            status = invalid(fd);
-            break;
-    }
-    return status;
-} /* function exec_command */
-
-
-/**
- *  hello()
- *
- *  \brief  This function sends the hello string to 
- *          the client.
- */
-int hello(int fd)
-{
-    char hello[] =  "\n"
-                    "Oh hai Mark\n"
-                    "\n";
-    int hello_len = strlen(hello);
-    if (send(fd, hello, hello_len, 0) != hello_len)
-    {
-        fprintf(stderr, "Hello Command Failed: %d\n", fd);
-        return ERROR;
-    }
-    return SUCCESS;
-} /* function hello */
-
-
-/**
- *  help()
- *
- *  \brief  This function sends the help menu to 
- *          the client.
- */
-int help(int fd)
-{
-    char help[] =   "\n"
-                    " --------------------------------\n"
-                    "           HELP MENU\n"
-                    " --------------------------------\n"
-                    "\n"
-                    " help   - prints help menu\n"
-                    " hello  - prints a hello message\n"
-                    "\n";
-    int help_len = strlen(help);
-    if (send(fd, help, help_len, 0) != help_len)
-    {
-        fprintf(stderr, "Help Command Failed: %d\n", fd);
-        return ERROR;
-    }
-    return SUCCESS;
-} /* function help */
-
-
-/**
- *  invalid()
- *
- *  \brief  This function responds to the client 
- *          if the command is invalid.
- */
-int invalid(int fd)
-{
-    char invalid[] =  "\n"
-                    "Invalid command.\n"
-                    "Use 'help' to view a list of valid commands.\n"
-                    "\n";
-    int invalid_len = strlen(invalid);
-    if (send(fd, invalid, invalid_len, 0) != invalid_len)
-    {
-        fprintf(stderr, "Hello Command Failed: %d\n", fd);
-        return ERROR;
-    }
-    return SUCCESS;
-
-} /* function invalid */

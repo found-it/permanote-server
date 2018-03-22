@@ -9,7 +9,7 @@ CC     = gcc
 CFLAGS = -Wall
 LIB    = -lpthread
 
-OBJ    = server.o main.o
+OBJ    = server.o commands.o main.o
 
 TARGET = server
 
@@ -18,6 +18,9 @@ server: $(OBJ)
 
 server.o: src/server.c include/server.h
 	$(CC) $(CFLAGS) -c src/server.c
+
+commands.o: src/commands.c include/commands.h
+	$(CC) $(CFLAGS) -c src/commands.c
 
 main.o: src/main.c
 	$(CC) $(CFLAGS) -c src/main.c
