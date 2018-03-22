@@ -20,9 +20,7 @@
 #define IADDR    "127.0.0.1"
 #define NUM_CONN  20
 
-enum commands {Hello = 1, Help = 2};
 
-void hello_s();
 int server_setup();
 int get_client(int sockfd);
 int get_msg(int fd, char buf[], size_t size);
@@ -32,6 +30,7 @@ int exec_command(int fd, int cmd);
 
 int hello(int fd);
 int help(int fd);
+int invalid(int fd);
 
 
 #endif
