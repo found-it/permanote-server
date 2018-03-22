@@ -11,6 +11,9 @@ This program is a simple command line TCP Server implemented in C.
 ```
 help    - Displays a help menu.
 hello   - Responds with a greeting.
+write   - Reads text from the user and stores in file on server.
+          Use ...<return> to end the user input.
+read    - Displays the notes file for the logged in user.
 ```
 
 ## Usage

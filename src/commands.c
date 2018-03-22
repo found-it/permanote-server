@@ -6,23 +6,26 @@
  */
 
 #include "../include/commands.h"
+#include "../include/server.h"
 #include "../include/base.h"
 
 
 /**
  *  \enum of commands used by the server
  */
-enum commands 
+enum commands
 {
-    Hello = 1, 
+    Hello = 1,
     Help  = 2,
-    Write = 3
+    Write = 3,
+    Read  = 4
 };
 
 static int invalid(int fd);
 static int help(int fd);
 static int hello(int fd, const char *username);
 static int write_file(int fd, const char *username);
+static int read_file(int fd, const char *username);
 
 /**
  *  parse_command()
@@ -41,6 +44,9 @@ int parse_command(char *input)
 
     if (strcmp(input, "write") == 0)
         return Write;
+
+    if (strcmp(input, "read") == 0)
+        return Read;
 
     return ERROR;
 } /* function parse_command */
@@ -66,6 +72,9 @@ int exec_command(int fd, int cmd, const char *username)
         case Write:
             status = write_file(fd, username);
             break;
+        case Read:
+            status = read_file(fd, username);
+            break;
         default:
             status = invalid(fd);
             break;
@@ -73,14 +82,74 @@ int exec_command(int fd, int cmd, const char *username)
     return status;
 } /* function exec_command */
 
+/**
+ *  read_file()
+ *
+ *  \brief  
+ */
+static int read_file(int fd, const char *username)
+{
+    int read;
+    char *buf;
+    char filepath[len];
+    size_t buf_len = MAX_LEN;
+    size_t len = strlen(username) + 12;
+    const char sep[] = "-------------------------\n";
+    const int sep_len = strlen(sep);
 
+    snprintf(filepath, len + 8, "./files/%s.md", username);
+
+    FILE *file = fopen(filepath, "r");
+    if (file == NULL)
+    {
+        const char err[] = "\n"
+                           "You have not created a note yet\n"
+                           "so there is nothing to read.\n"
+                           "\n";
+        const int err_len = strlen(err);
+
+        send(fd, err, err_len, 0);
+        return NOFILE;
+    }
+
+    if (send(fd, sep, sep_len, 0) != sep_len)
+    {
+        fprintf(stderr, "Reading line failed: %d\n", fd);
+        return ERROR;
+    }
+
+    while ((read = getline(&buf, &buf_len, file)) != -1)
+    {
+        if (send(fd, buf, strlen(buf), 0) != strlen(buf))
+        {
+            fprintf(stderr, "Reading line failed: %d\n", fd);
+            return ERROR;
+        }
+    }
+
+    if (send(fd, sep, sep_len, 0) != sep_len)
+    {
+        fprintf(stderr, "Reading line failed: %d\n", fd);
+        return ERROR;
+    }
+
+    fclose(file);
+    return SUCCESS;
+} /* function read_file */
+
+/**
+ *  write_file()
+ *
+ *  \brief  
+ */
 static int write_file(int fd, const char *username)
 {
-    printf("%s is in %s\n", username, __func__);
     size_t len = strlen(username) + 4;
     char filename[len];
     char filepath[len + 8];
     char response[MAX_LEN];
+    char buf[MAX_LEN];
+    int l;
     int  response_len;
     snprintf(filename, len, "%s.md", username);
     snprintf(filepath, len + 8, "./files/%s", filename);
@@ -101,15 +170,21 @@ static int write_file(int fd, const char *username)
         return ERROR;
     }
 
+    while ((l = get_msg(fd, buf, MAX_LEN)) != 0) 
+    {
+        if (strcmp(buf, "...\n") == 0)
+            break;
+        fprintf(file, "%s", buf);
+    }
 
-
+    fclose(file);
     return SUCCESS;
-}
+} /* function write_file */
 
 /**
  *  hello()
  *
- *  \brief  This function sends the hello string to 
+ *  \brief  This function sends the hello string to
  *          the client.
  */
 static int hello(int fd, const char *username)
@@ -130,7 +205,7 @@ static int hello(int fd, const char *username)
 /**
  *  help()
  *
- *  \brief  This function sends the help menu to 
+ *  \brief  This function sends the help menu to
  *          the client.
  */
 static int help(int fd)
@@ -139,8 +214,10 @@ static int help(int fd)
                         "           HELP MENU\n"
                         " --------------------------------\n"
                         "\n"
-                        " help   - prints help menu\n"
-                        " hello  - prints a hello message\n"
+                        " help  - prints help menu\n"
+                        " hello - prints a hello message\n"
+                        " write - write text to your notes document\n"
+                        " read  - read your current notes sheet\n"
                         "\n"
                         " To exit simply use ctrl-c.\n"
                         " --------------------------------\n"
@@ -158,7 +235,7 @@ static int help(int fd)
 /**
  *  invalid()
  *
- *  \brief  This function responds to the client 
+ *  \brief  This function responds to the client
  *          if the command is invalid.
  */
 static int invalid(int fd)

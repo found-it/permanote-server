@@ -29,6 +29,7 @@ static void *handle_client(void *client);
  */
 static void int_handler(int sig)
 {
+    printf("in %s\n", __func__);
     _shutdown = 1;
 } /* function int_handler */
 
@@ -171,7 +172,7 @@ static void *handle_client(void *client)
             cmd = parse_command(buf);
         }
 
-        if (exec_command(*clientfd, cmd, username))
+        if (exec_command(*clientfd, cmd, username) == ERROR)
         {
             fprintf(stderr, "[%s] Error executing command\n", username);
             break;

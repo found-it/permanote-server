@@ -10,17 +10,6 @@
 
 
 /**
- *  \enum of commands used by the server
- */
-enum commands 
-{
-    Hello = 1, 
-    Help  = 2,
-    Write = 3
-};
-
-
-/**
  *  server_setup()
  *
  *  \brief  This function sets up the server socket and returns

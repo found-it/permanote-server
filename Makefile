@@ -14,6 +14,7 @@ OBJ    = server.o commands.o main.o
 TARGET = server
 
 server: $(OBJ)
+	mkdir -p files
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(LIB)
 
 server.o: src/server.c include/server.h
