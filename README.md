@@ -1,9 +1,10 @@
 # TCP Server Program
-## Written by: James Petersen
+### Written by: James Petersen
+
+This program is a simple command line TCP Server implemented in C.
 
 ### Port:    4444
 ### Address: 0.0.0.0 (ANY)
-This program is a simple command line TCP Server implemented in C.
 
 ## Current Commands
 
@@ -14,7 +15,13 @@ hello   - Responds with a greeting.
 
 ## Usage
 
-You can connect to the server by opening up another terminal and using netcat
+To build and run the project is as simple as:
+```
+make
+./server
+```
+
+Connect to the server by opening up another terminal and using netcat
 ```
 nc 0.0.0.0 4444
 ```
