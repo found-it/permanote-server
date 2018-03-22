@@ -21,11 +21,21 @@ make
 ./server
 ```
 
-Connect to the server by opening up another terminal and using netcat
-### Port:    4444
-### Address: 0.0.0.0 (ANY)
+The server is bound to:
+**Port:    4444**
+**Address: 0.0.0.0 (ANY)**
+
+It can be connected to locally using netcat
 ```
 nc 0.0.0.0 4444
 ```
 
+or from another machine
+```
+nc you.machine.ip.addr 4444
+```
+
 The server will prompt you for a username at first, go ahead and pick one and then begin issuing commands. You can quit the client by ctrl-C.
+
+**Compiled on:    Ubuntu 16.04 LTS**
+**Kernel version: 4.13.0-32-generic**
