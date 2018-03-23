@@ -45,4 +45,6 @@ The server will prompt you for a username at first, go ahead and pick one and th
 
 **Kernel version: 4.13.0-32-generic**
 
+**Checked for memory leaks with:** ```valgrind --leak-check=full```
+
 _Comment style supports Doxygen, however I have not created a Doxyfile for the project. I would be happy to create one upon request._
